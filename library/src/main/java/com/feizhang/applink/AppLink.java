@@ -108,11 +108,6 @@ public abstract class AppLink implements Serializable {
     }
 
     /**
-     * Return icon resource as notification's small icon.
-     */
-    public abstract int getSmallIcon();
-
-    /**
      * For personal appLink, account should not be empty.
      */
     public abstract boolean isPersonal();
@@ -123,7 +118,7 @@ public abstract class AppLink implements Serializable {
 
     private NotificationCompat.Builder getDefaultBuilder(@NonNull Context context, @NonNull String title, @NonNull String subTitle) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, context.getPackageName());
-        builder.setSmallIcon(getSmallIcon());
+        builder.setSmallIcon(AppLinkUtils.sSmallIcon);
         builder.setLargeIcon(PushNotificationReceiver.getAppIcon(context));
         builder.setContentTitle(title);
         if (!TextUtils.isEmpty(subTitle)) {

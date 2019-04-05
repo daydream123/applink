@@ -1,3 +1,8 @@
 <resources>
-    <string name="app_name">applink</string>
+    <string name="app_name">AppLink</string>
+    <string name="sent_order_btn">测试收到订单推送</string>
+    <string name="sent_new_msg_btn">测试收到新消息推送</string>
+    <string name="open_order_detail">打开订单详情页</string>
+    <string name="news">消息</string>
+    <string name="notification_tip">因为当前没有打开订单详情页，所以收到订单推送会弹通知</string>
 </resources>

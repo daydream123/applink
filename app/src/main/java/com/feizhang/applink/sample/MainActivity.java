@@ -25,7 +25,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String appLink = "my-scheme://product/OrderDetail?orderId=abc123";
-                AppLinkUtils.pushAppLink(v.getContext(), appLink, "title", "subtitle", null);
+                AppLinkUtils.pushAppLink(v.getContext(), appLink, "您有新消息", "您的订单状态有变更", null);
             }
         });
     }

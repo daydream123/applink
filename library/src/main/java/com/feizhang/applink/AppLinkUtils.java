@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.support.annotation.DrawableRes;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.TextUtils;
@@ -22,30 +23,42 @@ import java.util.regex.Pattern;
  */
 public class AppLinkUtils {
     private static String sAppLinkPackage;
+
+    @DrawableRes
+    static int sSmallIcon;
     private static String sScheme;
-    private static String sPrefix;
+    private static String sPrefix = "";
 
     /**
-     * Initialize appLink with appLink package and custom scheme
+     * init appLink.
      */
-    public static void setup(String appLinkPackage, String scheme){
+    public static void setup(String appLinkPackage, @DrawableRes int smallIcon, String scheme){
         sAppLinkPackage = appLinkPackage;
+        sSmallIcon = smallIcon;
         sScheme = scheme;
     }
 
-    public static void setup(String appLinkPackage, String scheme, String prefix){
+    /**
+     * init appLink
+     */
+    public static void setup(String appLinkPackage, @DrawableRes int smallIcon, String scheme, String prefix){
         sAppLinkPackage = appLinkPackage;
+        sSmallIcon = smallIcon;
         sScheme = scheme;
         sPrefix = prefix;
     }
 
     private static void checkArgs(){
+        if (TextUtils.isEmpty(sAppLinkPackage)) {
+            throw new IllegalArgumentException("no appLinkPackage found, please init in application");
+        }
+
         if (TextUtils.isEmpty(sScheme)) {
             throw new IllegalArgumentException("no scheme found, please init in application");
         }
 
-        if (TextUtils.isEmpty(sAppLinkPackage)) {
-            throw new IllegalArgumentException("no appLinkPackage found, please init in application");
+        if (sSmallIcon == 0){
+            throw new IllegalArgumentException("no small icon for notification found, please init in application");
         }
     }
 
@@ -101,7 +114,7 @@ public class AppLinkUtils {
     @Nullable
     public static AppLink parseAppLink(@NonNull Context context, @NonNull String appLink) {
         try {
-            AppLinkParams params = readParamsFromAppLink(context, appLink);
+            AppLinkParams params = readParams(context, appLink);
             @SuppressWarnings("unchecked")
             Class<? extends AppLink> moduleClass = (Class<? extends AppLink>) Class.forName(params.getClassName());
             AppLink pushMessage = moduleClass.newInstance();
@@ -116,49 +129,51 @@ public class AppLinkUtils {
     }
 
     @NonNull
-    private static AppLinkParams readParamsFromAppLink(@NonNull Context context, @NonNull String appLink) throws Exception {
+    private static AppLinkParams readParams(@NonNull Context context, @NonNull String appLink) throws Exception {
         checkArgs();
 
         Pattern p = Pattern.compile(sScheme + "://([^?]*)");
         Matcher m = p.matcher(appLink);
 
         // find full url path
-        String urlPath;
+        String fullPath;
         if (!m.find()) {
-            throw new Exception("app link format is not valid for " + appLink);
-        }
-        urlPath = m.group(1);
-        if (!urlPath.contains("/")) {
-            throw new Exception("app link format is not valid for " + appLink);
+            throw new Exception("appLink format is not valid for " + appLink);
         }
 
-        // find module name and page name
-        String[] paths = urlPath.split("/");
-        String moduleName = paths[0].trim().toLowerCase();
+        fullPath = m.group(1);
+
+        // build full class name
+        StringBuilder builder = new StringBuilder(sAppLinkPackage);
+        if (!fullPath.contains("/")){
+            builder.append(".").append(fullPath);
+        } else {
+            String[] paths = fullPath.split("/");
+            for (String path : paths) {
+                builder.append(".").append(path.trim());
+            }
+        }
 
         // ignore word in package
+        String fullClassPath = builder.toString();
         if (!TextUtils.isEmpty(sPrefix)) {
-            moduleName = moduleName.replace(sPrefix, "");
+            fullClassPath = fullClassPath.replace(sPrefix, "");
         }
-        String pageName = paths[1].trim();
-
-        // assemble class name
-        String className = sAppLinkPackage + "." + moduleName + "." + pageName;
 
         // find params
         boolean haveValues = appLink.indexOf("?") > 0;
         if (!haveValues) {
-            return new AppLinkParams(className);
+            return new AppLinkParams(fullClassPath);
         } else {
             Map<String, String> values = AppLinkUtils.readParams(appLink);
             for (String key : values.keySet()) {
                 if (key.equals("json")) {
                     String value = values.get(key);
-                    return new AppLinkParams(className, value == null ? "" : value.trim());
+                    return new AppLinkParams(fullClassPath, value == null ? "" : value.trim());
                 }
             }
 
-            return new AppLinkParams(className, values);
+            return new AppLinkParams(fullClassPath, values);
         }
     }
 

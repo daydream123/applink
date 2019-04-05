@@ -12,7 +12,7 @@
         android:id="@+id/openBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Open Order Detail"
+        android:text="@string/open_order_detail"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
@@ -22,7 +22,15 @@
         android:id="@+id/sendBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
-        android:text="send appLink as push message" />
+        android:layout_marginTop="10dp"
+        android:text="@string/sent_order_btn" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:padding="10dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:text="@string/notification_tip" />
 
 </LinearLayout>

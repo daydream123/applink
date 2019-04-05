@@ -25,6 +25,7 @@ public class PushMessageService {
                 instance = new PushMessageService(context);
             }
         }
+
         return instance;
     }
 
@@ -33,8 +34,7 @@ public class PushMessageService {
             return;
         }
 
-        dbHelper.getWritableDatabase().delete("push_message",
-                "_id=?",
+        dbHelper.getWritableDatabase().delete("push_message", "_id=?",
                 new String[]{String.valueOf(messageId)});
     }
 
@@ -49,11 +49,11 @@ public class PushMessageService {
         }
 
         if (pushMessage.isPersonal() && !TextUtils.isEmpty(account)) {
-            dbHelper.getWritableDatabase().delete("push_message", "app_link=? and account=?",
-                    new String[]{appLink, account});
+            dbHelper.getWritableDatabase().delete("push_message", "app_link like ? and account=?",
+                    new String[]{appLink + "%", account});
         } else {
-            dbHelper.getWritableDatabase().delete("push_message", "app_link=?",
-                    new String[]{appLink});
+            dbHelper.getWritableDatabase().delete("push_message", "app_link like ?",
+                    new String[]{appLink + "%"});
         }
     }
 
@@ -70,12 +70,12 @@ public class PushMessageService {
         Cursor cursor;
         if (pushMessage.isPersonal()) {
             cursor = dbHelper.getReadableDatabase().rawQuery(
-                    "select count(*) from push_message where app_link=?",
-                    new String[]{pushMessage.getAppLink()});
+                    "select count(*) from push_message where app_link like ?",
+                    new String[]{pushMessage.getAppLink() + "%"});
         } else {
             cursor = dbHelper.getReadableDatabase().rawQuery(
-                    "select count(*) from push_message where app_link=? and account=?",
-                    new String[]{pushMessage.getAppLink(), account});
+                    "select count(*) from push_message where app_link like ? and account=?",
+                    new String[]{pushMessage.getAppLink() + "%", account});
         }
 
         try {
@@ -86,11 +86,11 @@ public class PushMessageService {
         }
     }
 
-    public boolean haveUnread(@NonNull String appLink, @NonNull String account){
+    public boolean haveUnread(@NonNull String appLink, @NonNull String account) {
         return haveUnread(Collections.singletonList(appLink), account);
     }
 
-    public boolean haveUnread(@NonNull List<String> appLinks, @NonNull String account){
+    public boolean haveUnread(@NonNull List<String> appLinks, @NonNull String account) {
         for (String appLink : appLinks) {
             AppLink pushMessage = AppLinkUtils.parseAppLink(dbHelper.getContext(), appLink);
             if (pushMessage == null) {
@@ -102,12 +102,12 @@ public class PushMessageService {
             }
 
             Cursor cursor;
-            if (pushMessage.isPersonal()){
-                String sql = "select count(*) from push_message where app_link=? and account=? and read=?";
-                cursor = dbHelper.getReadableDatabase().rawQuery(sql, new String[]{appLink, account, "0"});
+            if (pushMessage.isPersonal()) {
+                String sql = "select count(*) from push_message where app_link like ? and account=? and read=?";
+                cursor = dbHelper.getReadableDatabase().rawQuery(sql, new String[]{appLink + "%", account, "0"});
             } else {
-                String sql = "select count(*) from push_message where app_link=? and read=?";
-                cursor = dbHelper.getReadableDatabase().rawQuery(sql, new String[]{appLink, "0"});
+                String sql = "select count(*) from push_message where app_link like ? and read=?";
+                cursor = dbHelper.getReadableDatabase().rawQuery(sql, new String[]{appLink + "%", "0"});
             }
 
             try {
@@ -121,22 +121,22 @@ public class PushMessageService {
         return false;
     }
 
-    public void save(@NonNull AppLink pushMessage){
+    public void save(@NonNull AppLink pushMessage) {
         SQLiteDatabase database = dbHelper.getWritableDatabase();
         try {
             // delete exist appLink and add new one
             database.beginTransaction();
             database.execSQL("DELETE FROM push_message WHERE lower(app_link) = ?",
                     new String[]{pushMessage.getAppLink().toLowerCase(Locale.SIMPLIFIED_CHINESE)});
-            database.execSQL("INSERT INTO push_message(title, sub_title, pic_url, app_link, account, update_dt, read) VALUES(?, ?, ?, ?, ?, ?, ?)",
-                    new Object[]{
-                            pushMessage.getTitle(),
-                            pushMessage.getSubTitle(),
-                            pushMessage.getPicUrl(),
-                            pushMessage.getAppLink(),
-                            pushMessage.getAccount(),
-                            pushMessage.getReceiveDt(),
-                            pushMessage.isRead()});
+            database.execSQL("INSERT INTO push_message(title, sub_title, pic_url, app_link, account, update_dt, read) " +
+                    "VALUES(?, ?, ?, ?, ?, ?, ?)", new Object[]{
+                    pushMessage.getTitle(),
+                    pushMessage.getSubTitle(),
+                    pushMessage.getPicUrl(),
+                    pushMessage.getAppLink(),
+                    pushMessage.getAccount(),
+                    pushMessage.getReceiveDt(),
+                    pushMessage.isRead()});
             database.setTransactionSuccessful();
         } finally {
             database.endTransaction();
@@ -157,18 +157,12 @@ public class PushMessageService {
         values.put("read", true);
         values.put("update_dt", System.currentTimeMillis());
 
-        if (pushMessage.isPersonal()){
-            dbHelper.getWritableDatabase().update(
-                    "push_message",
-                    values,
-                    "app_link=? and account=?",
-                    new String[]{appLink, account});
+        if (pushMessage.isPersonal()) {
+            dbHelper.getWritableDatabase().update("push_message", values, "app_link like ? and account=?",
+                    new String[]{appLink + "%", account});
         } else {
-            dbHelper.getWritableDatabase().update(
-                    "push_message",
-                    values,
-                    "app_link=?",
-                    new String[]{appLink});
+            dbHelper.getWritableDatabase().update("push_message", values, "app_link like ?",
+                    new String[]{appLink + "%"});
         }
     }
 }

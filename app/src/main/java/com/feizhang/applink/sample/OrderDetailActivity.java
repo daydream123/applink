@@ -7,18 +7,24 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.feizhang.applink.AppLink;
 import com.feizhang.applink.AppLinkUtils;
 import com.feizhang.applink.PushContentReceiver;
+import com.feizhang.applink.RedDotView;
+
+import java.util.Collections;
+import java.util.List;
 
 public class OrderDetailActivity extends AppCompatActivity {
-    private TextView mTextView;
+    private RedDotView mRedDotView;
 
     private PushContentReceiver mReceiver = new PushContentReceiver() {
+
         @Override
-        public String[] getAppLinksToCompare() {
-            return new String[]{"my-scheme://product/OrderDetail"};
+        public List<String> getAppLinks() {
+            return Collections.singletonList("my-scheme://product/OrderDetail");
         }
 
         @Override
@@ -29,10 +35,9 @@ public class OrderDetailActivity extends AppCompatActivity {
         @SuppressLint("SetTextI18n")
         @Override
         public boolean onReceive(@NonNull Context context, @NonNull AppLink appLink) {
-            mTextView.setText("received appLink: " + appLink.getAppLink());
-
+            Toast.makeText(context, "订单已刷新", Toast.LENGTH_SHORT).show();
             // return true indicates the receiver will not deliver to other receivers.
-            return true;
+            return false;
         }
     };
 
@@ -40,12 +45,30 @@ public class OrderDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_order_detail);
-        mTextView = findViewById(R.id.pushContentText);
 
-        findViewById(R.id.sendBtn).setOnClickListener(new View.OnClickListener() {
+        TextView newsText = findViewById(R.id.alertText);
+        newsText.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mRedDotView.remove();
+            }
+        });
+
+        mRedDotView = findViewById(R.id.redDotView);
+        mRedDotView.init(MyApplication.accountId, "my-scheme://NewMsgAlert");
+
+        findViewById(R.id.sendOrderBtn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 String appLink = "my-scheme://product/OrderDetail?orderId=abc123";
+                AppLinkUtils.pushAppLink(v.getContext(), appLink);
+            }
+        });
+
+        findViewById(R.id.sendNewMsgBtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String appLink = "my-scheme://NewMsgAlert";
                 AppLinkUtils.pushAppLink(v.getContext(), appLink);
             }
         });

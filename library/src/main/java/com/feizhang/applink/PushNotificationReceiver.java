@@ -65,7 +65,7 @@ public abstract class PushNotificationReceiver extends PushReceiver {
 
         // no title cannot show notification
         if (TextUtils.isEmpty(appLink.getTitle())) {
-            Log.e(AppLink.TAG, "no title cannot show notification for " + appLink.getAppLink());
+            Log.d(AppLink.TAG, "no title cannot show notification for " + appLink.getAppLink());
             return;
         }
 

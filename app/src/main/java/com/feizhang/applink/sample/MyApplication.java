@@ -19,7 +19,7 @@ public class MyApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        AppLinkUtils.setup(APP_LINK_PACKAGE, SCHEME);
+        AppLinkUtils.setup(APP_LINK_PACKAGE, R.drawable.nofication_small_ic, SCHEME);
         PushNotificationReceiver.register(this, new PushNotificationReceiver() {
 
             @Override

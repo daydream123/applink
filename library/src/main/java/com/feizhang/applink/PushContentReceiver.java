@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.text.TextUtils;
 import android.util.Pair;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -37,7 +38,7 @@ public abstract class PushContentReceiver extends PushReceiver {
     /**
      * Specify appLink to receive or to handle.
      */
-    public abstract String[] getAppLinksToCompare();
+    public abstract List<String> getAppLinks();
 
     /**
      * Return true to indicate that the push message has been handled and will not deliver it to other receiver.
@@ -60,7 +61,7 @@ public abstract class PushContentReceiver extends PushReceiver {
 
         // check if target appLink can receive by current receiver
         boolean matched = false;
-        String[] appLinks = getAppLinksToCompare();
+        List<String> appLinks = getAppLinks();
         for (String item : appLinks) {
             // check if configured appLink was included in received appLink
             // configured appLinks aways have no params and received appLinks may have params
