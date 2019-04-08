@@ -22,7 +22,7 @@ public class AppHome extends AppLink {
     }
 
     @Override
-    public boolean isPersonal() {
+    public boolean isPrivate() {
         return false;
     }
 }

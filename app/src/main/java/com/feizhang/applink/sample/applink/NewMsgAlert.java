@@ -5,12 +5,12 @@ import com.feizhang.applink.AppLink;
 public class NewMsgAlert extends AppLink {
 
     @Override
-    public boolean isPersonal() {
+    public boolean isPrivate() {
         return true;
     }
 
     @Override
-    public boolean needSave() {
+    public boolean shouldSave() {
         return true;
     }
 }

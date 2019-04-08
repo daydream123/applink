@@ -62,7 +62,7 @@ public abstract class PushReceiver extends BroadcastReceiver {
             link.setPicUrl(picUrl);
             link.setAccount(getAccount(context));
 
-            if (link.needSave() && !refresh) {
+            if (link.shouldSave() && !refresh) {
                 PushMessageService.getInstance(context).save(link);
             }
 

@@ -48,7 +48,7 @@ public class PushMessageService {
             return;
         }
 
-        if (pushMessage.isPersonal() && !TextUtils.isEmpty(account)) {
+        if (pushMessage.isPrivate() && !TextUtils.isEmpty(account)) {
             dbHelper.getWritableDatabase().delete("push_message", "app_link like ? and account=?",
                     new String[]{appLink + "%", account});
         } else {
@@ -63,12 +63,12 @@ public class PushMessageService {
             return 0;
         }
 
-        if (pushMessage.isPersonal() && TextUtils.isEmpty(account)) {
+        if (pushMessage.isPrivate() && TextUtils.isEmpty(account)) {
             return 0;
         }
 
         Cursor cursor;
-        if (pushMessage.isPersonal()) {
+        if (pushMessage.isPrivate()) {
             cursor = dbHelper.getReadableDatabase().rawQuery(
                     "select count(*) from push_message where app_link like ?",
                     new String[]{pushMessage.getAppLink() + "%"});
@@ -97,12 +97,12 @@ public class PushMessageService {
                 continue;
             }
 
-            if (pushMessage.isPersonal() && TextUtils.isEmpty(account)) {
+            if (pushMessage.isPrivate() && TextUtils.isEmpty(account)) {
                 continue;
             }
 
             Cursor cursor;
-            if (pushMessage.isPersonal()) {
+            if (pushMessage.isPrivate()) {
                 String sql = "select count(*) from push_message where app_link like ? and account=? and read=?";
                 cursor = dbHelper.getReadableDatabase().rawQuery(sql, new String[]{appLink + "%", account, "0"});
             } else {
@@ -149,7 +149,7 @@ public class PushMessageService {
             return;
         }
 
-        if (pushMessage.isPersonal() && TextUtils.isEmpty(account)) {
+        if (pushMessage.isPrivate() && TextUtils.isEmpty(account)) {
             return;
         }
 
@@ -157,7 +157,7 @@ public class PushMessageService {
         values.put("read", true);
         values.put("update_dt", System.currentTimeMillis());
 
-        if (pushMessage.isPersonal()) {
+        if (pushMessage.isPrivate()) {
             dbHelper.getWritableDatabase().update("push_message", values, "app_link like ? and account=?",
                     new String[]{appLink + "%", account});
         } else {

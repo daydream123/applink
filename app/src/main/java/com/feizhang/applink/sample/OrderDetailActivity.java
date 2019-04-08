@@ -32,12 +32,15 @@ public class OrderDetailActivity extends AppCompatActivity {
             return MyApplication.accountId;
         }
 
+        /**
+         * 一般这里我们会再次调用订单接口并刷新当前页面
+         * @return true： 终止消息传递，即其他receiver收不到此message
+         */
         @SuppressLint("SetTextI18n")
         @Override
         public boolean onReceive(@NonNull Context context, @NonNull AppLink appLink) {
             Toast.makeText(context, "订单已刷新", Toast.LENGTH_SHORT).show();
-            // return true indicates the receiver will not deliver to other receivers.
-            return false;
+            return true;
         }
     };
 

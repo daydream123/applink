@@ -63,14 +63,14 @@ public abstract class AppLink implements Serializable {
      */
     private boolean read;
 
-    private Map<String, String> params = new HashMap<>();
+    protected Map<String, String> params = new HashMap<>();
 
     private String jsonStr;
 
     /**
      * Override it to tell if the appLink need to save into db.
      */
-    public boolean needSave() {
+    public boolean shouldSave() {
         return false;
     }
 
@@ -110,7 +110,7 @@ public abstract class AppLink implements Serializable {
     /**
      * For personal appLink, account should not be empty.
      */
-    public abstract boolean isPersonal();
+    public abstract boolean isPrivate();
 
     public NotificationCompat.Builder getBuilder(@NonNull Context context, @NonNull String title, @NonNull String subTitle) {
         return getDefaultBuilder(context, title, subTitle);
