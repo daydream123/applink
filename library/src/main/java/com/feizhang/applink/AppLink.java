@@ -65,7 +65,7 @@ public abstract class AppLink implements Serializable {
 
     protected Map<String, String> params = new HashMap<>();
 
-    private String jsonStr;
+    protected String jsonStr;
 
     /**
      * Override it to tell if the appLink need to save into db.
