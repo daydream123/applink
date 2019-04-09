@@ -22,6 +22,10 @@ public class OrderDetailActivity extends AppCompatActivity {
 
     private PushContentReceiver mReceiver = new PushContentReceiver() {
 
+        /**
+         * 告诉receiver当前可以接收处理哪些appLink，
+         * 在微信聊天场景就好比可以接收文字消息、表情消息、定位消息等
+         */
         @Override
         public List<String> getAppLinks() {
             return Collections.singletonList("my-scheme://product/OrderDetail");
@@ -77,11 +81,5 @@ public class OrderDetailActivity extends AppCompatActivity {
         });
 
         PushContentReceiver.register(this, mReceiver, true);
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        PushContentReceiver.unregister(this, mReceiver);
     }
 }
