@@ -15,7 +15,7 @@ import java.util.List;
  * Created by zhangfei on 2016/1/19.
  */
 public class RedDotView extends AppCompatImageView {
-    private String mAccount;
+    private String mAccount = "no-account";
 
     private List<String> mAppLinks = new ArrayList<>();
 
@@ -95,6 +95,16 @@ public class RedDotView extends AppCompatImageView {
      */
     public void init(String account, String... appLinks) {
         mAccount = account;
+        mAppLinks.clear();
+        mAppLinks.addAll(Arrays.asList(appLinks));
+        initVisibility();
+    }
+
+    /**
+     * Same as {@link #init(String, String...)} but no account
+     * @param appLinks appLinks current red dot view will receive
+     */
+    public void init(String... appLinks) {
         mAppLinks.clear();
         mAppLinks.addAll(Arrays.asList(appLinks));
         initVisibility();
