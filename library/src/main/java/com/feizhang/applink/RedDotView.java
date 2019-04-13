@@ -53,61 +53,46 @@ public class RedDotView extends AppCompatImageView {
     };
 
     public RedDotView(@NonNull Context context) {
-        super(context);
-        initView();
+        this(context, null);
     }
 
     public RedDotView(@NonNull Context context, AttributeSet attrs) {
-        super(context, attrs);
-        initView();
+        this(context, attrs, 0);
     }
 
     public RedDotView(@NonNull Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
-        initView();
+        setImageResource(R.drawable.red_dot_view);
     }
 
-    private void initView() {
-        setImageResource(R.drawable.red_dot_view);
-        if (isInEditMode()) {
-            return;
-        }
+    @Override
+    protected void onAttachedToWindow() {
+        super.onAttachedToWindow();
+        PushContentReceiver.register(getContext(), mContentReceiver, false);
+        checkVisible();
+    }
 
-        addOnAttachStateChangeListener(new OnAttachStateChangeListener() {
+    @Override
+    protected void onDetachedFromWindow() {
+        super.onDetachedFromWindow();
+        PushContentReceiver.unregister(getContext(), mContentReceiver);
+    }
 
-            @Override
-            public void onViewAttachedToWindow(View v) {
-                PushContentReceiver.register(v.getContext(), mContentReceiver, false);
-            }
-
-            @Override
-            public void onViewDetachedFromWindow(View v) {
-                PushContentReceiver.unregister(v.getContext(), mContentReceiver);
-            }
-        });
+    /**
+     * For some case, push message is private, so need to provide account.
+     *
+     * @param account account maybe phone number or account id
+     */
+    public void setAccount(String account) {
+        mAccount = account;
     }
 
     /**
      * Bind push appLink with red dot view, so that it can receive push message automatically.
-     *
-     * @param account  it maybe account id or phone number
-     * @param appLinks appLinks current red dot view will receive
      */
-    public void init(String account, String... appLinks) {
-        mAccount = account;
+    public void setAppLinks(String... appLinks) {
         mAppLinks.clear();
         mAppLinks.addAll(Arrays.asList(appLinks));
-        initVisibility();
-    }
-
-    /**
-     * Same as {@link #init(String, String...)} but no account
-     * @param appLinks appLinks current red dot view will receive
-     */
-    public void init(String... appLinks) {
-        mAppLinks.clear();
-        mAppLinks.addAll(Arrays.asList(appLinks));
-        initVisibility();
     }
 
     /**
@@ -125,7 +110,7 @@ public class RedDotView extends AppCompatImageView {
         }
     }
 
-    private void initVisibility() {
+    private void checkVisible() {
         if (mAppLinks == null || mAppLinks.size() == 0) {
             return;
         }

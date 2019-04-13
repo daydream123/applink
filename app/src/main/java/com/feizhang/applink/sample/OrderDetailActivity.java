@@ -62,7 +62,8 @@ public class OrderDetailActivity extends AppCompatActivity {
         });
 
         mRedDotView = findViewById(R.id.redDotView);
-        mRedDotView.init(MyApplication.accountId, "my-scheme://NewMsgAlert");
+        mRedDotView.setAccount(MyApplication.accountId);
+        mRedDotView.setAppLinks("my-scheme://NewMsgAlert");
 
         findViewById(R.id.sendOrderBtn).setOnClickListener(new View.OnClickListener() {
             @Override
